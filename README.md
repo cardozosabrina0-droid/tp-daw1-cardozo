@@ -1,50 +1,83 @@
-# TP Integrador · DAW1 — <Nombre del sistema>
+# TP Integrador DAW1 - Sistema de Reservas de Canchas
 
-**Alumno/a:** Apellido, Nombre · **Legajo:** 00000
-**Enunciado elegido:** <biblioteca | gimnasio | taller | canchas | eventos>
-
+**Alumna:** Cardozo, Sabrina  
+**Enunciado elegido:** Canchas
 
 ## Descripción
 
-<Dos o tres líneas: qué hace el sistema y para quién.>
+Sistema web desarrollado con Java y Spring Boot para administrar
+canchas deportivas, clientes y reservas.
+
+Permite registrar canchas y clientes, realizar reservas,
+consultar disponibilidad y gestionar estados.
 
 ## Cómo ejecutarlo
 
-Requisitos: Java 21 (Maven viene incluido con `mvnw`).
+Requisitos:
+- Java 21
+- Maven Wrapper incluido en el proyecto
+
+Desde la carpeta principal ejecutar:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-La API queda en `http://localhost:8080/api`. La base H2 se guarda en `data/` (no se sube al repositorio).
-Consola H2: `http://localhost:8080/h2-console`.
+La API funciona en:
 
-## Modelo
+http://localhost:8080/api
+
+Base de datos: H2.
+
+## Modelo de datos
 
 | Entidad | Atributos principales | Relaciones |
 |---|---|---|
-| <Entidad1> | id, ... | ... |
-| <Entidad2> | id, ... | ... |
-| <Entidad3> | id, estado, ... | N a 1 con <Entidad1> y <Entidad2> |
-
-Estados de <Entidad3>: `ESTADO_A → ESTADO_B | ESTADO_C`, ...
+| Cancha | id, nombre, deporte, precioHora | Tiene muchas reservas |
+| Cliente | id, nombre, telefono | Tiene muchas reservas |
+| Reserva | id, inicio, horas, estado, precioTotal | Pertenece a una cancha y un cliente |
 
 ## Endpoints
 
-| Método | Ruta | Descripción | Respuestas |
-|---|---|---|---|
-| GET | /api/... | Lista ... | 200 |
-| GET | /api/.../{id} | Busca por id | 200, 404 |
-| POST | /api/... | Crea | 201, 400, 404, 409 |
-| PUT | /api/.../{id} | Modifica | 200, 400, 404, 409 |
-| DELETE | /api/.../{id} | Borra | 204, 404, 409 |
-| PATCH | /api/.../{id}/estado | Cambia el estado | 200, 400, 404, 409 |
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | /api/canchas | Listar canchas |
+| GET | /api/canchas/{id} | Buscar cancha |
+| POST | /api/canchas | Crear cancha |
+| PUT | /api/canchas/{id} | Modificar cancha |
+| DELETE | /api/canchas/{id} | Eliminar cancha |
+| GET | /api/clientes | Listar clientes |
+| GET | /api/clientes/{id} | Buscar cliente |
+| POST | /api/clientes | Crear cliente |
+| PUT | /api/clientes/{id} | Modificar cliente |
+| DELETE | /api/clientes/{id} | Eliminar cliente |
+| GET | /api/reservas | Listar reservas |
+| GET | /api/reservas/{id} | Buscar reserva |
+| POST | /api/reservas | Crear reserva |
+| PATCH | /api/reservas/{id}/estado | Cambiar estado |
+| GET | /api/canchas/{id}/reservas?fecha=AAAA-MM-DD | Reservas por fecha |
+| GET | /api/clientes/{id}/reservas | Reservas de un cliente |
 
 ## Reglas de negocio
 
-1. <Regla 1 y qué código devuelve>
-2. <Regla 2>
+1. Una cancha no puede tener reservas superpuestas.
+2. Las reservas canceladas liberan el horario.
+3. La duración permitida es de 1 a 3 horas.
+4. El precio total se calcula multiplicando el precio por hora por la duración.
+5. Las reservas comienzan en estado PENDIENTE.
+6. Los cambios de estado permitidos son:
+   - PENDIENTE a CONFIRMADA o CANCELADA.
+   - CONFIRMADA a FINALIZADA o CANCELADA.
+7. Los cambios de estado inválidos devuelven HTTP 409.
+8. Los registros inexistentes devuelven HTTP 404.
+9. Los datos inválidos devuelven HTTP 400 utilizando ProblemDetail.
 
 ## Pruebas
 
-En `pruebas.http` están todas las peticiones de ejemplo (se ejecutan desde IntelliJ).
+Las peticiones de ejemplo se encuentran en pruebas.http.
+
+El proyecto incluye pruebas automáticas que se ejecutan mediante:
+
+```bash
+bash .tp/correr.sh
+```

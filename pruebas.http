@@ -1,32 +1,101 @@
-### Archivo de pruebas · reemplazá las rutas por las de tu enunciado
-### En IntelliJ: abrí este archivo y tocá el ▶ verde de cada petición.
+### Listar canchas
+GET http://localhost:8080/api/canchas
 
-@base = http://localhost:8080/api
-
-### Listar
-GET {{base}}/recursos
-
-### Crear
-POST {{base}}/recursos
+### Crear cancha
+POST http://localhost:8080/api/canchas
 Content-Type: application/json
 
 {
-  "campo1": "valor",
-  "campo2": "valor",
-  "campo3": "valor"
+  "nombre": "Cancha 1",
+  "deporte": "Futbol 5",
+  "precioHora": 15000
 }
 
-### Buscar por id
-GET {{base}}/recursos/1
+### Buscar cancha
+GET http://localhost:8080/api/canchas/1
 
-### Error de validación (400)
-POST {{base}}/recursos
+### Actualizar cancha
+PUT http://localhost:8080/api/canchas/1
 Content-Type: application/json
 
-{ "campo1": "" }
+{
+  "nombre": "Cancha 1 Techada",
+  "deporte": "Futbol 5",
+  "precioHora": 18000
+}
 
-### Cambiar estado
-PATCH {{base}}/otro-recurso/1/estado
+### Listar clientes
+GET http://localhost:8080/api/clientes
+
+### Crear cliente
+POST http://localhost:8080/api/clientes
 Content-Type: application/json
 
-{ "estado": "OTRO_ESTADO" }
+{
+  "nombre": "Juan Perez",
+  "telefono": "2644567890"
+}
+
+### Crear reserva
+POST http://localhost:8080/api/reservas
+Content-Type: application/json
+
+{
+  "canchaId": 1,
+  "clienteId": 1,
+  "inicio": "2026-12-20T18:00:00",
+  "horas": 2
+}
+
+### Listar reservas
+GET http://localhost:8080/api/reservas
+
+### Buscar reserva
+GET http://localhost:8080/api/reservas/1
+
+### Confirmar reserva
+PATCH http://localhost:8080/api/reservas/1/estado
+Content-Type: application/json
+
+{
+  "estado": "CONFIRMADA"
+}
+
+### Reservas por cancha y fecha
+GET http://localhost:8080/api/canchas/1/reservas?fecha=2026-12-20
+
+### Reservas por cliente
+GET http://localhost:8080/api/clientes/1/reservas
+
+### Probar superposicion de horarios
+POST http://localhost:8080/api/reservas
+Content-Type: application/json
+
+{
+  "canchaId": 1,
+  "clienteId": 1,
+  "inicio": "2026-12-20T19:00:00",
+  "horas": 2
+}
+
+### Probar cambio de estado invalido
+PATCH http://localhost:8080/api/reservas/1/estado
+Content-Type: application/json
+
+{
+  "estado": "PENDIENTE"
+}
+
+### Probar cancha inexistente
+GET http://localhost:8080/api/canchas/999999
+
+### Probar validacion de horas
+POST http://localhost:8080/api/reservas
+Content-Type: application/json
+
+{
+  "canchaId": 1,
+  "clienteId": 1,
+  "inicio": "2026-12-20T21:00:00",
+  "horas": 5
+}
